@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from pedido.models import Pedido
 from item.models import Item
 from carrinho.models import Carrinho
-from .serializers import PedidoSerializerList, PedidoSerializer, PedidoSerializerUpdate
+from .serializers import PedidoSerializerList, PedidoSerializer, PedidoSerializerUpdate, baixa_estoque
 
 
 class PedidoViewSet(ModelViewSet):
@@ -35,18 +35,3 @@ class PedidoViewSet(ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def baixa_estoque(item, carrinho, pedido, dif=0, destroy=False):
-    if dif == 0:
-        if destroy:
-            item.quantidade = item.quantidade + pedido.quantidade_vendida
-            carrinho.valor = carrinho.valor - (pedido.quantidade_vendida * item.valor)
-        else:
-            item.quantidade = item.quantidade - pedido.quantidade_vendida
-            carrinho.valor = carrinho.valor + (pedido.quantidade_vendida * item.valor)
-    else:
-        item.quantidade = item.quantidade - dif
-        print(dif * item.valor)
-        print(dif)
-        carrinho.valor = carrinho.valor + (dif * item.valor)
-    item.save()
-    carrinho.save()
